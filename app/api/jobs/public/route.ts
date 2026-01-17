@@ -32,9 +32,11 @@ export async function GET() {
 
         return NextResponse.json(jobs);
     } catch (error) {
-        console.error('Erro ao buscar vagas p\u00fablicas:', error);
+        console.error('Erro ao buscar vagas públicas:', error);
+        console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+        console.error('Stack:', error instanceof Error ? error.stack : 'No stack trace');
         return NextResponse.json(
-            { error: 'Erro ao buscar vagas' },
+            { error: 'Erro ao buscar vagas', details: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }
         );
     }
