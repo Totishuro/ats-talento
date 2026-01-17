@@ -92,7 +92,7 @@ export default function AdminPanel() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-lg text-gray-600">Carregando...</div>
+                <div className="text-lg text-gray-900">Carregando...</div>
             </div>
         );
     }
@@ -121,11 +121,11 @@ export default function AdminPanel() {
             <div className="max-w-7xl mx-auto px-6 py-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div className="bg-white p-4 rounded-lg shadow">
-                        <div className="text-sm text-gray-600">Total de Candidatos</div>
+                        <div className="text-sm text-gray-900">Total de Candidatos</div>
                         <div className="text-2xl font-bold text-gray-900">{applications.length}</div>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow">
-                        <div className="text-sm text-gray-600">Novos (Hoje)</div>
+                        <div className="text-sm text-gray-900">Novos (Hoje)</div>
                         <div className="text-2xl font-bold text-blue-600" suppressHydrationWarning>
                             {applications.filter(
                                 (app) =>
@@ -134,14 +134,14 @@ export default function AdminPanel() {
                         </div>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow">
-                        <div className="text-sm text-gray-600">Em Entrevista</div>
+                        <div className="text-sm text-gray-900">Em Entrevista</div>
                         <div className="text-2xl font-bold text-purple-600">
                             {getApplicationsByStage('HR_INTERVIEW').length +
                                 getApplicationsByStage('TECHNICAL_INTERVIEW').length}
                         </div>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow">
-                        <div className="text-sm text-gray-600">Contratados</div>
+                        <div className="text-sm text-gray-900">Contratados</div>
                         <div className="text-2xl font-bold text-green-600">
                             {getApplicationsByStage('HIRED').length}
                         </div>
@@ -150,7 +150,7 @@ export default function AdminPanel() {
 
                 {/* Kanban Board */}
                 <div className="bg-white p-6 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">
                         Pipeline de Candidatos (Arraste para mover)
                     </h2>
 
@@ -180,13 +180,13 @@ export default function AdminPanel() {
                                             <div className="font-medium text-sm text-gray-900 mb-1">
                                                 {app.candidate.fullName}
                                             </div>
-                                            <div className="text-xs text-gray-600">
+                                            <div className="text-xs text-gray-900">
                                                 {app.job.title}
                                             </div>
-                                            <div className="text-xs text-gray-500 mt-2">
+                                            <div className="text-xs text-gray-800 mt-2">
                                                 {app.candidate.city}, {app.candidate.state}
                                             </div>
-                                            <div className="text-xs text-gray-400 mt-1" suppressHydrationWarning>
+                                            <div className="text-xs text-gray-700 mt-1" suppressHydrationWarning>
                                                 {new Date(app.appliedAt).toLocaleDateString('pt-BR')}
                                             </div>
                                         </div>
@@ -199,27 +199,27 @@ export default function AdminPanel() {
 
                 {/* Candidate Database */}
                 <div className="bg-white p-6 rounded-lg shadow mt-8">
-                    <h2 className="text-xl font-semibold mb-4">Banco de Candidatos</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Banco de Candidatos</h2>
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Nome
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Email
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Telefone
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Localização
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Status
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                         Data
                                     </th>
                                 </tr>
@@ -233,13 +233,13 @@ export default function AdminPanel() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-600">{app.candidate.email}</div>
+                                            <div className="text-sm text-gray-900">{app.candidate.email}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-600">{app.candidate.phone}</div>
+                                            <div className="text-sm text-gray-900">{app.candidate.phone}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-600">
+                                            <div className="text-sm text-gray-900">
                                                 {app.candidate.city}, {app.candidate.state}
                                             </div>
                                         </td>
@@ -248,7 +248,7 @@ export default function AdminPanel() {
                                                 {STAGES.find((s) => s.id === app.currentStage)?.name}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" suppressHydrationWarning>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800" suppressHydrationWarning>
                                             {new Date(app.appliedAt).toLocaleDateString('pt-BR')}
                                         </td>
                                     </tr>

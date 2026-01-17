@@ -52,7 +52,7 @@ export default function VagasPublicas() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-lg text-gray-600">Carregando vagas...</div>
+                <div className="text-lg text-gray-900">Carregando vagas...</div>
             </div>
         );
     }
@@ -67,7 +67,7 @@ export default function VagasPublicas() {
                             <img src="/logo-dark.png" alt="Talento" className="h-16 w-auto" />
                             <div>
                                 <h1 className="text-2xl font-bold text-[#0b1b2f]">Talento</h1>
-                                <p className="text-gray-600 text-sm mt-1">Oportunidades de Carreira</p>
+                                <p className="text-gray-900 text-sm mt-1">Oportunidades de Carreira</p>
                             </div>
                         </div>
                         <button
@@ -86,7 +86,7 @@ export default function VagasPublicas() {
                     <h2 className="text-4xl font-bold text-gray-900 mb-4">
                         Venha fazer parte do nosso time!
                     </h2>
-                    <p className="text-xl text-gray-600">
+                    <p className="text-xl text-gray-900">
                         {jobs.length} {jobs.length === 1 ? 'vaga disponível' : 'vagas disponíveis'}
                     </p>
                 </div>
@@ -97,7 +97,7 @@ export default function VagasPublicas() {
                         <h3 className="text-2xl font-bold text-gray-900 mb-2">
                             Nenhuma vaga disponível no momento
                         </h3>
-                        <p className="text-gray-600">
+                        <p className="text-gray-900">
                             Acompanhe esta página para ser notificado de novas oportunidades!
                         </p>
                     </div>
@@ -118,18 +118,18 @@ export default function VagasPublicas() {
                                         {job.description && (
                                             <div className="mb-4">
                                                 <h4 className="font-semibold text-gray-700 mb-2">Descrição:</h4>
-                                                <p className="text-gray-600 whitespace-pre-line">{job.description}</p>
+                                                <p className="text-gray-900 whitespace-pre-line">{job.description}</p>
                                             </div>
                                         )}
 
                                         {job.requirements && (
                                             <div className="mb-4">
                                                 <h4 className="font-semibold text-gray-700 mb-2">Requisitos:</h4>
-                                                <p className="text-gray-600 whitespace-pre-line">{job.requirements}</p>
+                                                <p className="text-gray-900 whitespace-pre-line">{job.requirements}</p>
                                             </div>
                                         )}
 
-                                        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6">
+                                        <div className="flex flex-wrap gap-4 text-sm text-gray-900 mb-6">
                                             {job.location && (
                                                 <div className="flex items-center gap-2">
                                                     <span>📍</span>
@@ -165,7 +165,7 @@ export default function VagasPublicas() {
 
             {/* Footer */}
             <div className="bg-white mt-16">
-                <div className="max-w-6xl mx-auto px-6 py-8 text-center text-gray-600">
+                <div className="max-w-6xl mx-auto px-6 py-8 text-center text-gray-900">
                     <p>© 2026 Talento. Sistema de Recrutamento e Seleção</p>
                 </div>
             </div>

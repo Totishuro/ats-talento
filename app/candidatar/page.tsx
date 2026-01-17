@@ -92,7 +92,7 @@ function CandidateFormContent() {
                             <p className="text-sm text-blue-700">{job.department}</p>
                         </div>
                     ) : (
-                        <p className="text-gray-600">Formulário de Candidatura</p>
+                        <p className="text-gray-900">Formulário de Candidatura</p>
                     )}
                 </div>
 
@@ -249,7 +249,7 @@ function CandidateFormContent() {
                         {loading ? 'Enviando...' : 'Enviar Candidatura'}
                     </button>
 
-                    <p className="text-xs text-gray-500 text-center">
+                    <p className="text-xs text-gray-800 text-center">
                         Ao enviar, você concorda com os termos da LGPD
                     </p>
                 </form>

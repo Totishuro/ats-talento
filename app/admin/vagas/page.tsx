@@ -275,7 +275,7 @@ export default function JobsManagement() {
                                         className="w-full px-4 py-2 border rounded-md"
                                         placeholder="Ex: R$ 5.000 - 8.000"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Será exibida para candidatos</p>
+                                    <p className="text-xs text-gray-800 mt-1">Será exibida para candidatos</p>
                                 </div>
                             </div>
 
@@ -334,7 +334,7 @@ export default function JobsManagement() {
                         <h2 className="text-xl font-semibold mb-4">Vagas Cadastradas ({jobs.length})</h2>
 
                         {jobs.length === 0 ? (
-                            <p className="text-gray-500 text-center py-8">
+                            <p className="text-gray-800 text-center py-8">
                                 Nenhuma vaga cadastrada ainda. Clique em "Nova Vaga" para começar.
                             </p>
                         ) : (
@@ -351,13 +351,13 @@ export default function JobsManagement() {
                                                     {getStatusBadge(job.status)}
                                                 </div>
                                                 <p className="text-sm font-semibold text-blue-600 mb-1">🏢 {job.companyName}</p>
-                                                <p className="text-sm text-gray-600 mb-2">{job.department}</p>
+                                                <p className="text-sm text-gray-900 mb-2">{job.department}</p>
                                                 {job.description && (
                                                     <p className="text-sm text-gray-700 mb-2 line-clamp-2">
                                                         {job.description}
                                                     </p>
                                                 )}
-                                                <div className="flex flex-wrap gap-3 text-sm text-gray-500">
+                                                <div className="flex flex-wrap gap-3 text-sm text-gray-800">
                                                     {job.location && <span>📍 {job.location}</span>}
                                                     {job.workMode && <span>💼 {job.workMode}</span>}
                                                     {job.salaryRange && <span>💰 Público: {job.salaryRange}</span>}
