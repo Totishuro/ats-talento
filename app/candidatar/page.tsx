@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Job {
@@ -9,7 +9,7 @@ interface Job {
     department: string;
 }
 
-export default function CandidateForm() {
+function CandidateFormContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const vagaId = searchParams.get('vaga');
@@ -255,5 +255,13 @@ export default function CandidateForm() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function CandidateForm() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p>Carregando...</p></div>}>
+            <CandidateFormContent />
+        </Suspense>
     );
 }
