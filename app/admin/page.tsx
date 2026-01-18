@@ -345,10 +345,12 @@ export default function AdminPanel() {
                 {/* Kanban Board - Spec 5.2 */}
                 <section className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-10 overflow-x-auto">
                     <div className="flex justify-between items-center mb-8">
-                        <h2 className="text-2xl font-bold text-[#0F172A]">Pipeline de Candidatos</h2>
+                        <h2 className="text-2xl font-bold text-black flex items-center gap-2">
+                            Pipeline de Candidatos <span className="text-sm font-medium text-slate-400">(Arraste para mover)</span>
+                        </h2>
                         <div className="flex gap-2">
-                            <div className="bg-slate-100 p-2 rounded-lg text-sm font-medium text-slate-600 px-4">Filtrar por Vaga: Todas</div>
-                            <div className="bg-slate-100 p-2 rounded-lg text-sm font-medium text-slate-600 px-4">Ordenar por: Data</div>
+                            <div className="bg-slate-100 p-2 rounded-lg text-sm font-bold text-black px-4">Filtrar por Vaga: Todas</div>
+                            <div className="bg-slate-100 p-2 rounded-lg text-sm font-bold text-black px-4">Ordenar por: Data</div>
                         </div>
                     </div>
 
@@ -361,13 +363,13 @@ export default function AdminPanel() {
                                 onDrop={() => handleDrop(stage.id as ApplicationStage)}
                             >
                                 <div className="flex items-center justify-between px-2">
-                                    <h3 className="font-bold text-[#0F172A] flex items-center gap-2">
+                                    <h3 className="font-bold text-black flex items-center gap-2 uppercase tracking-tight">
                                         {stage.name}
-                                        <span className="bg-slate-100 text-slate-500 text-xs py-0.5 px-2 rounded-full">
+                                        <span className="bg-[#0F172A] text-white text-xs py-0.5 px-2 rounded-full font-bold">
                                             {getApplicationsByStage(stage.id).length}
                                         </span>
                                     </h3>
-                                    <span className="text-xl text-slate-300">⋮</span>
+                                    <span className="text-xl text-slate-400">⋮</span>
                                 </div>
 
                                 <div className="flex-1 flex flex-col gap-4 p-1 rounded-2xl border-2 border-dashed border-transparent hover:border-slate-200 transition-all">
@@ -423,8 +425,8 @@ export default function AdminPanel() {
                 <section className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                     <div className="flex justify-between items-center mb-8">
                         <div>
-                            <h2 className="text-2xl font-bold text-[#0F172A]">Base de Talentos</h2>
-                            <p className="text-slate-500 text-sm">Total de candidates cadastrados na plataforma</p>
+                            <h2 className="text-2xl font-bold text-black">Base de Talentos</h2>
+                            <p className="text-black/60 text-sm font-medium">Total de candidates cadastrados na plataforma</p>
                         </div>
                         <button className="text-[#38BDF8] font-bold text-sm hover:underline">📥 Exportar CSV</button>
                     </div>
@@ -433,11 +435,11 @@ export default function AdminPanel() {
                         <table className="min-w-full">
                             <thead>
                                 <tr className="border-b border-slate-50">
-                                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Candidato</th>
-                                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Vaga / Status</th>
-                                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Localização</th>
-                                    <th className="px-4 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Última Atividade</th>
-                                    <th className="px-4 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Ações</th>
+                                    <th className="px-4 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Candidato</th>
+                                    <th className="px-4 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Vaga / Status</th>
+                                    <th className="px-4 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Localização</th>
+                                    <th className="px-4 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Última Atividade</th>
+                                    <th className="px-4 py-4 text-right text-xs font-bold text-black uppercase tracking-wider">Ações</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
