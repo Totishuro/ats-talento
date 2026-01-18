@@ -1,26 +1,54 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Inter';
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color Palette - Spec 3.1 */
+  --primary-navy: #0F172A;        /* Navy Blue Profundo */
+  --secondary-bg: #F1F5F9;         /* Cinza Gelo/Prata */
+  --surface-white: #FFFFFF;        /* Branco Puro */
+  --accent-blue: #38BDF8;          /* Azul Celeste */
+  --success-green: #10B981;        /* Verde */
+  --warning-yellow: #F59E0B;       /* Amarelo */
+  --error-red: #EF4444;            /* Vermelho */
+  --text-primary: #1E293B;         /* Texto Principal */
+  --text-secondary: #64748B;       /* Texto Secundário */
+
+  --background: var(--secondary-bg);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-primary-navy: var(--primary-navy);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-surface-white: var(--surface-white);
+  --color-accent-blue: var(--accent-blue);
+  --color-success-green: var(--success-green);
+  --color-warning-yellow: var(--warning-yellow);
+  --color-error-red: var(--error-red);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  
+  --font-sans: 'Inter', var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Subtle dark mode adjustment while keeping branding */
+    --background: #0F172A;
+    --foreground: #F8FAFC;
+    --surface-white: #1E293B;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

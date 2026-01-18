@@ -24,21 +24,34 @@ model Candidate {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   
+  // LGPD
+  consentDate     DateTime?
+  consentIp       String?
+
   applications    Application[]
+  notes           Note[]
+
+  @@index([cpf])
+  @@index([email])
 }
 
 model Job {
   id              String        @id @default(cuid())
   title           String
   department      String
-  companyName     String        @default("") // Empresa cliente que está contratando
+  companyName     String        @default("")
   description     String        @default("")
   requirements    String        @default("")
   location        String        @default("")
   workMode        String        @default("PRESENCIAL") // PRESENCIAL, HIBRIDO, REMOTO
-  salaryRange     String?       // Faixa salarial PÚBLICA (exibida para candidatos)
-  salaryBudget    String?       // Budget CONFIDENCIAL do gestor (NÃO exibir para candidatos)
-  status          String        @default("OPEN") // DRAFT, OPEN, CLOSED
+  salaryMin       Decimal?
+  salaryMax       Decimal?
+  salaryRange     String?       // Deprecated: keeping for compatibility
+  salaryBudget    String?       
+  status          JobStatus     @default(OPEN)
+  type            JobType       @default(FULL_TIME)
+  openedAt        DateTime?
+  closedAt        DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   
@@ -49,13 +62,98 @@ model Application {
   id                String            @id @default(cuid())
   candidateId       String
   jobId             String
-  currentStage      String            @default("APPLIED") // APPLIED, SCREENING, HR_INTERVIEW, TECHNICAL_INTERVIEW, PROPOSAL_SENT, HIRED, REJECTED, TALENT_POOL
+  currentStage      ApplicationStage  @default(APPLIED)
+  previousStage     ApplicationStage?
   appliedAt         DateTime          @default(now())
   lastStageChange   DateTime          @default(now())
   
+  // Evaluation
+  salaryExpectation Decimal?
+  availability      String?
+  score             Decimal?
+  rejectionReason   String?
+  source            String?
+
   candidate         Candidate         @relation(fields: [candidateId], references: [id])
   job               Job               @relation(fields: [jobId], references: [id])
-  
+  notes             Note[]
+  stageHistory      StageHistory[]
+
   @@unique([candidateId, jobId])
+}
+
+model StageHistory {
+  id              String            @id @default(cuid())
+  applicationId   String
+  fromStage       ApplicationStage?
+  toStage         ApplicationStage
+  changedAt       DateTime          @default(now())
+  changedBy       String            // User ID
+  notes           String?
+  
+  application     Application       @relation(fields: [applicationId], references: [id])
+}
+
+model Note {
+  id              String      @id @default(cuid())
+  candidateId     String
+  applicationId   String?
+  content         String      @db.Text
+  createdBy       String      // User ID
+  createdAt       DateTime    @default(now())
+  isPrivate       Boolean     @default(false)
+  
+  candidate       Candidate   @relation(fields: [candidateId], references: [id])
+  application     Application? @relation(fields: [applicationId], references: [id])
+}
+
+model EmailTemplate {
+  id              String      @id @default(cuid())
+  name            String
+  subject         String
+  body            String      @db.Text
+  stage           ApplicationStage
+  variables       String[]    // ["firstName", "jobTitle", "companyName"]
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+}
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  passwordHash    String
+  fullName        String
+  role            UserRole    @default(RECRUITER)
+  createdAt       DateTime    @default(now())
+}
+
+enum ApplicationStage {
+  APPLIED
+  SCREENING
+  HR_INTERVIEW
+  TECHNICAL_INTERVIEW
+  PROPOSAL_SENT
+  HIRED
+  REJECTED
+  TALENT_POOL
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum UserRole {
+  ADMIN
+  RECRUITER
+  HIRING_MANAGER
 }
 
