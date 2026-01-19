@@ -15,6 +15,8 @@ interface Candidate {
     phone: string;
     city: string;
     state: string;
+    linkedinUrl?: string;
+    portfolioUrl?: string;
     notes: Note[];
 }
 
@@ -165,6 +167,44 @@ export default function AdminPanel() {
         }
     };
 
+    const exportToCSV = () => {
+        // CSV Headers
+        const headers = ['Nome', 'Email', 'Telefone', 'Cidade', 'Estado', 'LinkedIn', 'Portfolio', 'Cadastrado em'];
+
+        // Convert applications to CSV rows
+        const rows = applications.map(app => [
+            app.candidate.fullName,
+            app.candidate.email,
+            app.candidate.phone,
+            app.candidate.city,
+            app.candidate.state,
+            app.candidate.linkedinUrl || '-',
+            app.candidate.portfolioUrl || '-',
+            new Date(app.createdAt).toLocaleDateString('pt-BR')
+        ]);
+
+        // Create CSV content
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        // Create blob and download
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const filename = `candidatos_${new Date().toISOString().split('T')[0]}.csv`;
+
+        link.href = url;
+        link.setAttribute('download', filename); // Ensure filename is used
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Cleanup
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    };
+
     const getApplicationsByStage = (stageId: string) => {
         return applications.filter((app) => app.currentStage === stageId);
     };
@@ -266,7 +306,7 @@ export default function AdminPanel() {
             <nav className={`fixed left-0 top-0 h-full w-64 bg-[#0F172A] text-white p-6 shadow-2xl transition-transform duration-300 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="mb-12 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-tr from-[#38BDF8] to-white rounded-lg"></div>
+                    <img src="/LogoBranco.png" alt="Talento" className="w-10 h-10 object-contain" />
                     <span className="text-xl font-bold tracking-tight">Talento</span>
                 </div>
 
@@ -305,7 +345,7 @@ export default function AdminPanel() {
                     </button>
 
                     {/* Logo Icon */}
-                    <div className="w-10 h-10 bg-gradient-to-tr from-[#38BDF8] to-white rounded-lg"></div>
+                    <img src="/LogoBranco.png" alt="Talento" className="w-10 h-10 object-contain" />
 
                     {/* Divider */}
                     <div className="w-10 h-px bg-white/20"></div>
@@ -361,7 +401,7 @@ export default function AdminPanel() {
                         >
                             📋 Gerenciar Vagas
                         </button>
-                        <button className="bg-[#38BDF8] text-[#0F172A] px-5 py-2.5 rounded-lg font-bold shadow-md hover:brightness-110 transition-all">
+                        <button onClick={() => window.location.href = '/admin/vagas'} className="bg-[#38BDF8] text-[#0F172A] px-5 py-2.5 rounded-lg font-bold shadow-md hover:brightness-110 transition-all">
                             + Nova Vaga
                         </button>
                     </div>
@@ -502,9 +542,9 @@ export default function AdminPanel() {
                     <div className="flex justify-between items-center mb-8">
                         <div>
                             <h2 className="text-2xl font-bold text-black">Base de Talentos</h2>
-                            <p className="text-black/60 text-sm font-medium">Total de candidates cadastrados na plataforma</p>
+                            <p className="text-slate-600 text-sm font-medium">Total de candidatos cadastrados na plataforma</p>
                         </div>
-                        <button className="text-[#38BDF8] font-bold text-sm hover:underline">📥 Exportar CSV</button>
+                        <button onClick={exportToCSV} className="text-[#38BDF8] font-bold text-sm hover:underline">📥 Exportar CSV</button>
                     </div>
 
                     <div className="overflow-x-auto">

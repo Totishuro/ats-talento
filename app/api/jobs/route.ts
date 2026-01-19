@@ -37,7 +37,8 @@ export async function POST(request: Request) {
                 companyName: data.companyName || '',
                 description: data.description || '',
                 requirements: data.requirements || '',
-                location: data.location || '',
+                city: data.city || '',
+                state: data.state || '',
                 workMode: data.workMode || 'PRESENCIAL',
                 salaryRange: data.salaryRange || null,
                 salaryBudget: data.salaryBudget || null, // CONFIDENCIAL

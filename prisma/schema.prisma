@@ -18,6 +18,7 @@ model Candidate {
   phone           String
   city            String
   state           String
+  country         String        @default("Brasil")
   linkedinUrl     String?
   portfolioUrl    String?
   resumeFileUrl   String?
@@ -42,7 +43,8 @@ model Job {
   companyName     String        @default("")
   description     String        @default("")
   requirements    String        @default("")
-  location        String        @default("")
+  city            String        @default("")
+  state           String        @default("")
   workMode        String        @default("PRESENCIAL") // PRESENCIAL, HIBRIDO, REMOTO
   salaryMin       Decimal?
   salaryMax       Decimal?

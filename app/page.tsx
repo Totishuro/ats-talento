@@ -18,8 +18,8 @@ export default function Home() {
           <p className="text-xl md:text-2xl text-[#38BDF8] font-semibold mb-4">
             Sistema de Recrutamento e Seleção
           </p>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Conectamos empresas aos melhores talentos através de um processo seletivo inteligente e eficiente
+          <p className="text-lg text-white max-w-2xl mx-auto">
+            Conectamos as melhores empresas aos melhores talentos através de um processo seletivo inteligente e eficiente
           </p>
         </div>
 
@@ -32,19 +32,11 @@ export default function Home() {
                 <span className="text-4xl">👤</span>
                 <h3 className="text-xl font-bold text-[#38BDF8]">Para Candidatos</h3>
               </div>
-              <ul className="space-y-2 text-white/80">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Cadastre seu currículo em nosso banco de talentos</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Seja considerado para múltiplas oportunidades automaticamente</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Receba contato quando seu perfil combinar com vagas disponíveis</span>
-                </li>
+              <ul className="space-y-2 text-white">
+                <li>✓ Cadastre seu currículo em nosso Banco de Talentos</li>
+                <li>✓ Seja considerado para múltiplas oportunidades</li>
+                <li>✓ Receba contato quando surgirem vagas compatíveis</li>
+                <li>✓ Acompanhe o status da sua candidatura</li>
               </ul>
             </div>
             <div>
@@ -52,19 +44,11 @@ export default function Home() {
                 <span className="text-4xl">🏢</span>
                 <h3 className="text-xl font-bold text-[#38BDF8]">Para Empresas</h3>
               </div>
-              <ul className="space-y-2 text-white/80">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Gerencie todo o processo seletivo em uma única plataforma</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Visualize candidatos em um Kanban intuitivo</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#38BDF8] mt-1">✓</span>
-                  <span>Automatize comunicações e evite erros no processo</span>
-                </li>
+              <ul className="space-y-2 text-white">
+                <li>✓ Gerencie todo o processo seletivo em uma única plataforma</li>
+                <li>✓ Visualize candidatos em um Kanban interativo</li>
+                <li>✓ Automatize comunicações e notificações por email</li>
+                <li>✓ Acesse métricas e KPIs em tempo real</li>
               </ul>
             </div>
           </div>

@@ -11,6 +11,8 @@ interface Job {
     description: string;
     requirements: string;
     location: string;
+    city: string;
+    state: string;
     workMode: string;
     salaryRange?: string;
     salaryBudget?: string;
@@ -33,11 +35,86 @@ export default function JobsManagement() {
         description: '',
         requirements: '',
         location: '',
+        city: '',
+        state: '',
         workMode: 'PRESENCIAL',
         salaryRange: '',
         salaryBudget: '',
         status: 'DRAFT',
     });
+
+    // Auto-suggestion states for Job Form
+    const [stateSuggestions, setStateSuggestions] = useState<{ uf: string, name: string }[]>([]);
+    const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+    const [showStateSuggestions, setShowStateSuggestions] = useState(false);
+    const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+    const [filteredCitySuggestions, setFilteredCitySuggestions] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (formData.state.length === 2) {
+            fetchCities(formData.state);
+        }
+    }, [formData.state]);
+
+    const fetchCities = async (uf: string) => {
+        try {
+            const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+            const data = await response.json();
+            setCitySuggestions(data.map((city: any) => city.nome));
+        } catch (error) {
+            console.error('Erro ao buscar cidades:', error);
+            setCitySuggestions([]);
+        }
+    };
+
+    const BRAZILIAN_STATES = [
+        { uf: 'AC', name: 'Acre' }, { uf: 'AL', name: 'Alagoas' }, { uf: 'AP', name: 'Amapá' },
+        { uf: 'AM', name: 'Amazonas' }, { uf: 'BA', name: 'Bahia' }, { uf: 'CE', name: 'Ceará' },
+        { uf: 'DF', name: 'Distrito Federal' }, { uf: 'ES', name: 'Espírito Santo' }, { uf: 'GO', name: 'Goiás' },
+        { uf: 'MA', name: 'Maranhão' }, { uf: 'MT', name: 'Mato Grosso' }, { uf: 'MS', name: 'Mato Grosso do Sul' },
+        { uf: 'MG', name: 'Minas Gerais' }, { uf: 'PA', name: 'Pará' }, { uf: 'PB', name: 'Paraíba' },
+        { uf: 'PR', name: 'Paraná' }, { uf: 'PE', name: 'Pernambuco' }, { uf: 'PI', name: 'Piauí' },
+        { uf: 'RJ', name: 'Rio de Janeiro' }, { uf: 'RN', name: 'Rio Grande do Norte' }, { uf: 'RS', name: 'Rio Grande do Sul' },
+        { uf: 'RO', name: 'Rondônia' }, { uf: 'RR', name: 'Roraima' }, { uf: 'SC', name: 'Santa Catarina' },
+        { uf: 'SP', name: 'São Paulo' }, { uf: 'SE', name: 'Sergipe' }, { uf: 'TO', name: 'Tocantins' }
+    ];
+
+    const handleStateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.toUpperCase();
+        setFormData({ ...formData, state: value });
+
+        const suggestions = BRAZILIAN_STATES.filter(state =>
+            state.uf.includes(value) ||
+            state.name.toLowerCase().startsWith(value.toLowerCase())
+        );
+        setStateSuggestions(suggestions);
+        setShowStateSuggestions(value.length > 0);
+    };
+
+    const handleSelectState = (state: { uf: string, name: string }) => {
+        setFormData({ ...formData, state: state.uf });
+        setShowStateSuggestions(false);
+    };
+
+    const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setFormData({ ...formData, city: value });
+
+        if (value.length > 1) {
+            const filtered = citySuggestions.filter(city =>
+                city.toLowerCase().startsWith(value.toLowerCase())
+            ).slice(0, 5);
+            setFilteredCitySuggestions(filtered);
+            setShowCitySuggestions(filtered.length > 0);
+        } else {
+            setShowCitySuggestions(false);
+        }
+    };
+
+    const handleSelectCity = (city: string) => {
+        setFormData({ ...formData, city });
+        setShowCitySuggestions(false);
+    };
 
     useEffect(() => {
         fetchJobs();
@@ -73,6 +150,8 @@ export default function JobsManagement() {
                 description: '',
                 requirements: '',
                 location: '',
+                city: '',
+                state: '',
                 workMode: 'PRESENCIAL',
                 salaryRange: '',
                 salaryBudget: '',
@@ -89,7 +168,9 @@ export default function JobsManagement() {
             companyName: job.companyName,
             description: job.description,
             requirements: job.requirements,
-            location: job.location,
+            location: job.location || '',
+            city: job.city || '',
+            state: job.state || '',
             workMode: job.workMode,
             salaryRange: job.salaryRange || '',
             salaryBudget: job.salaryBudget || '',
@@ -181,8 +262,8 @@ export default function JobsManagement() {
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                                <p className="text-sm text-blue-900 font-semibold mb-2">🏢 Empresa Cliente</p>
-                                <p className="text-xs text-blue-700 mb-3">A Talento conecta talentos com empresas. Informe qual empresa está contratando:</p>
+                                <p className="text-sm text-blue-900 font-bold mb-2">🏢 Empresa Cliente</p>
+                                <p className="text-sm text-blue-800 mb-3">A Talento conecta talentos com empresas. Informe qual empresa está contratando:</p>
                                 <input
                                     type="text"
                                     required
@@ -242,15 +323,59 @@ export default function JobsManagement() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Localização</label>
+                                <div className="relative">
+                                    <label className="block text-sm font-medium mb-1">Estado (UF)</label>
                                     <input
                                         type="text"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                        required
+                                        value={formData.state}
+                                        onChange={handleStateChange}
+                                        onFocus={() => formData.state.length > 0 && setShowStateSuggestions(true)}
+                                        maxLength={2}
+                                        autoComplete="off"
                                         className="w-full px-4 py-2 border rounded-md"
-                                        placeholder="Ex: São Paulo/SP"
+                                        placeholder="EX: SP"
                                     />
+                                    {showStateSuggestions && stateSuggestions.length > 0 && (
+                                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                            {stateSuggestions.map((state) => (
+                                                <div
+                                                    key={state.uf}
+                                                    className="px-4 py-2 hover:bg-slate-100 cursor-pointer text-slate-800"
+                                                    onClick={() => handleSelectState(state)}
+                                                >
+                                                    <span className="font-bold text-blue-600 mr-2">{state.uf}</span> {state.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="relative">
+                                    <label className="block text-sm font-medium mb-1">Cidade</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.city}
+                                        onChange={handleCityChange}
+                                        onFocus={() => formData.city.length > 1 && setShowCitySuggestions(true)}
+                                        autoComplete="off"
+                                        className="w-full px-4 py-2 border rounded-md"
+                                        placeholder="Ex: São Paulo"
+                                    />
+                                    {showCitySuggestions && filteredCitySuggestions.length > 0 && (
+                                        <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                            {filteredCitySuggestions.map((city) => (
+                                                <div
+                                                    key={city}
+                                                    className="px-4 py-2 hover:bg-slate-100 cursor-pointer text-slate-800"
+                                                    onClick={() => handleSelectCity(city)}
+                                                >
+                                                    {city}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div>
@@ -280,10 +405,10 @@ export default function JobsManagement() {
                             </div>
 
                             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                <label className="block text-sm font-semibold text-yellow-900 mb-1">
+                                <label className="block text-sm font-bold text-yellow-900 mb-1">
                                     🔒 Budget Confidencial do Gestor
                                 </label>
-                                <p className="text-xs text-yellow-700 mb-2">Esta informação é PRIVADA e nunca será exibida para candidatos</p>
+                                <p className="text-sm text-yellow-800 mb-2">Esta informação é PRIVADA e nunca será exibida para candidatos</p>
                                 <input
                                     type="text"
                                     value={formData.salaryBudget}
@@ -358,7 +483,7 @@ export default function JobsManagement() {
                                                     </p>
                                                 )}
                                                 <div className="flex flex-wrap gap-3 text-sm text-gray-800">
-                                                    {job.location && <span>📍 {job.location}</span>}
+                                                    {(job.city || job.state) && <span>📍 {job.city}{job.city && job.state ? ', ' : ''}{job.state}</span>}
                                                     {job.workMode && <span>💼 {job.workMode}</span>}
                                                     {job.salaryRange && <span>💰 Público: {job.salaryRange}</span>}
                                                     {job.salaryBudget && <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">🔒 Budget: {job.salaryBudget}</span>}
