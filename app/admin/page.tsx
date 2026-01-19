@@ -40,6 +40,7 @@ interface Application {
 
 export default function AdminPanel() {
     const [applications, setApplications] = useState<Application[]>([]);
+    const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(true);
     const [draggedItem, setDraggedItem] = useState<Application | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -105,6 +106,7 @@ export default function AdminPanel() {
     useEffect(() => {
         setMounted(true);
         fetchApplications();
+        fetchJobs();
     }, []);
 
     // Close dropdowns when clicking outside
@@ -129,6 +131,16 @@ export default function AdminPanel() {
             console.error('Erro ao carregar aplicações:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchJobs = async () => {
+        try {
+            const response = await fetch('/api/jobs');
+            const data = await response.json();
+            setJobs(data);
+        } catch (error) {
+            console.error('Erro ao carregar vagas:', error);
         }
     };
 
@@ -501,7 +513,7 @@ export default function AdminPanel() {
                                     }}
                                     className="w-full p-4 bg-white border-2 border-blue-200 rounded-xl font-bold text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                 >
-                                    {uniqueJobs.map(job => (
+                                    {jobs.map(job => (
                                         <option key={job.id} value={job.id}>{job.title}</option>
                                     ))}
                                 </select>
