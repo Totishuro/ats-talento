@@ -136,39 +136,25 @@ export default function AdminPanel() {
     };
 
     const openRejectionModal = async (app: Application) => {
-        try {
-            const response = await fetch(`/api/applications/${app.id}/rejection`);
-            const data = await response.json();
-            setRejectionData({
-                id: app.id,
-                candidateName: app.candidate.fullName,
-                jobTitle: app.job.title,
-                preview: data.preview,
-                validations: data.validations
-            });
-            setIsRejectionModalOpen(true);
-        } catch (error) {
-            console.error('Erro ao preparar reprovação:', error);
-        }
+        setRejectionApplication(app);
+        setIsRejectionModalOpen(true);
     };
 
-    const handleConfirmRejection = async (scheduledFor?: string) => {
-        if (!rejectionData) return;
+    const handleConfirmRejection = async () => {
+        if (!rejectionApplication) return;
 
         try {
-            const response = await fetch(`/api/applications/${rejectionData.id}/rejection`, {
-                method: 'POST',
+            const response = await fetch(`/api/applications/${rejectionApplication.id}`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    rejectionReason,
-                    emailContent: rejectionData.preview,
-                    scheduledFor
+                    currentStage: 'REJECTED',
                 }),
             });
 
             if (response.ok) {
                 setIsRejectionModalOpen(false);
-                setRejectionData(null);
+                setRejectionApplication(null);
                 await fetchApplications();
             } else {
                 const error = await response.json();
@@ -197,43 +183,24 @@ export default function AdminPanel() {
     return (
         <div className="min-h-screen bg-[#F1F5F9]">
             {/* Rejection Modal - Spec 5.3 */}
-            {isRejectionModalOpen && rejectionData && (
-                <div className="fixed inset-0 bg-[#0F172A]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="bg-[#EF4444] p-6 text-white flex justify-between items-center">
-                            <h3 className="text-xl font-bold flex items-center gap-2">
-                                ⚠️ Confirmar Reprovação Segura
-                            </h3>
-                            <button onClick={() => setIsRejectionModalOpen(false)} className="text-white/80 hover:text-white">✕</button>
+            {isRejectionModalOpen && rejectionApplication && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-gradient-to-r from-[#EF4444] to-[#DC2626] p-8 rounded-t-3xl">
+                            <h3 className="text-2xl font-bold text-white">⚠️ Confirmar Reprovação</h3>
+                            <p className="text-red-100 mt-2 font-medium">Esta ação não pode ser desfeita. Revise cuidadosamente antes de prosseguir.</p>
                         </div>
 
                         <div className="p-8">
                             <div className="grid grid-cols-2 gap-6 mb-8">
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Candidato</label>
-                                    <div className="font-bold text-[#0F172A]">{rejectionData.candidateName}</div>
+                                    <div className="font-bold text-[#0F172A]">{rejectionApplication.candidate.fullName}</div>
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Vaga</label>
-                                    <div className="font-bold text-[#0F172A]">{rejectionData.jobTitle}</div>
+                                    <div className="font-bold text-[#0F172A]">{rejectionApplication.job.title}</div>
                                 </div>
-                            </div>
-
-                            <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    ✅ Verificações de Segurança (Anti-Gafe)
-                                </h4>
-                                <ul className="space-y-3">
-                                    <li className="flex items-center gap-3 text-sm text-slate-600 font-medium">
-                                        <span className="text-green-500 font-bold">✓</span> Nome verificado: <span className="text-[#0F172A]">{rejectionData.validations.name}</span>
-                                    </li>
-                                    <li className="flex items-center gap-3 text-sm text-slate-600 font-medium">
-                                        <span className="text-green-500 font-bold">✓</span> Email ativo: <span className="text-[#0F172A]">{rejectionData.validations.email}</span>
-                                    </li>
-                                    <li className="flex items-center gap-3 text-sm text-slate-600 font-medium">
-                                        <span className="text-green-500 font-bold">✓</span> Template de "{rejectionData.jobTitle}" carregado
-                                    </li>
-                                </ul>
                             </div>
 
                             <div className="mb-8">
@@ -251,25 +218,12 @@ export default function AdminPanel() {
                                 </select>
                             </div>
 
-                            <div className="mb-8">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Preview do Email</label>
-                                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-sm text-slate-600 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap font-sans">
-                                    {rejectionData.preview}
-                                </div>
-                            </div>
-
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <button
                                     onClick={() => handleConfirmRejection()}
                                     className="flex-1 bg-[#EF4444] text-white font-bold py-4 rounded-xl shadow-lg shadow-red-500/20 hover:brightness-110 active:scale-[0.98] transition-all"
                                 >
-                                    Enviar Agora
-                                </button>
-                                <button
-                                    onClick={() => handleConfirmRejection(new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString())}
-                                    className="flex-1 bg-white text-[#EF4444] border-2 border-[#EF4444] font-bold py-4 rounded-xl hover:bg-red-50 transition-all"
-                                >
-                                    Agendar p/ 2h
+                                    Reprovar Candidato
                                 </button>
                                 <button
                                     onClick={() => setIsRejectionModalOpen(false)}

@@ -5,7 +5,7 @@ export default function Home() {
         {/* Logo and Branding */}
         <div className="mb-12">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-tr from-[#38BDF8] to-white rounded-2xl"></div>
+            <img src="/logo.png" alt="Talento Logo" className="w-16 h-16 rounded-2xl" />
             <h1 className="text-5xl md:text-6xl font-bold text-white">
               ATS Talento
             </h1>
