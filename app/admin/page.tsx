@@ -49,6 +49,7 @@ export default function AdminPanel() {
     const [loading, setLoading] = useState(true);
     const [draggedItem, setDraggedItem] = useState<Application | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     // Rejection Modal State
     const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
@@ -62,6 +63,7 @@ export default function AdminPanel() {
     const [rejectionReason, setRejectionReason] = useState('Falta de experiência técnica');
 
     useEffect(() => {
+        setMounted(true);
         fetchApplications();
     }, []);
 
@@ -275,8 +277,8 @@ export default function AdminPanel() {
             {/* Desktop Sidebar Toggle */}
             <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="hidden lg:block fixed top-4 z-50 bg-[#0F172A] text-white p-3 rounded-lg shadow-xl hover:brightness-110 transition-all"
-                style={{ left: sidebarOpen ? '260px' : '16px' }}
+                className="hidden lg:block fixed top-4 z-30 bg-[#0F172A] text-white p-2.5 rounded-r-lg shadow-xl hover:brightness-110 transition-all"
+                style={{ left: sidebarOpen ? '256px' : '0px' }}
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {sidebarOpen ? (
