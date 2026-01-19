@@ -48,6 +48,7 @@ export default function AdminPanel() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [draggedItem, setDraggedItem] = useState<Application | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     // Rejection Modal State
     const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
@@ -261,8 +262,34 @@ export default function AdminPanel() {
                 </div>
             )}
 
+            {/* Sidebar Toggle Button */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="fixed top-4 left-4 z-50 lg:hidden bg-[#0F172A] text-white p-3 rounded-lg shadow-xl hover:brightness-110 transition-all"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            {/* Desktop Sidebar Toggle */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="hidden lg:block fixed top-4 z-50 bg-[#0F172A] text-white p-3 rounded-lg shadow-xl hover:brightness-110 transition-all"
+                style={{ left: sidebarOpen ? '260px' : '16px' }}
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {sidebarOpen ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    )}
+                </svg>
+            </button>
+
             {/* Sidebar / Sidebar Mock (Simplified based on spec) */}
-            <nav className="fixed left-0 top-0 h-full w-64 bg-[#0F172A] text-white p-6 hidden lg:block shadow-2xl">
+            <nav className={`fixed left-0 top-0 h-full w-64 bg-[#0F172A] text-white p-6 shadow-2xl transition-transform duration-300 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}>
                 <div className="mb-12 flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-tr from-[#38BDF8] to-white rounded-lg"></div>
                     <span className="text-xl font-bold tracking-tight">Talento</span>
@@ -272,16 +299,23 @@ export default function AdminPanel() {
                     <div className="p-3 bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3">
                         <span className="text-xl">📊</span> Dashboard
                     </div>
-                    <div className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
+                    <div
+                        onClick={() => window.location.href = '/admin/vagas'}
+                        className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors"
+                    >
                         <span className="text-xl">📋</span> Vagas
                     </div>
-                    <div className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors">
+                    <div
+                        onClick={() => window.location.href = '/admin/candidatos'}
+                        className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors"
+                    >
                         <span className="text-xl">👤</span> Candidatos
                     </div>
                 </div>
             </nav>
 
-            <main className="lg:ml-64 p-8">
+            <main className={`p-8 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
+                }`}>
                 {/* Header Section */}
                 <header className="flex justify-between items-center mb-10">
                     <div>
