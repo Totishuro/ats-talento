@@ -241,6 +241,8 @@ export default function JobsManagement() {
                                 description: '',
                                 requirements: '',
                                 location: '',
+                                city: '',
+                                state: '',
                                 workMode: 'PRESENCIAL',
                                 salaryRange: '',
                                 salaryBudget: '',

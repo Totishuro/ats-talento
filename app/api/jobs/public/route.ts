@@ -15,7 +15,8 @@ export async function GET() {
                 companyName: true,
                 description: true,
                 requirements: true,
-                location: true,
+                city: true,
+                state: true,
                 workMode: true,
                 salaryRange: true, // P\u00fablico - OK exibir
                 // salaryBudget: REMOVIDO - NUNCA expor para candidatos!
