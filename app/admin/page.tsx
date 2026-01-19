@@ -316,7 +316,50 @@ export default function AdminPanel() {
                 </div>
             </nav>
 
-            <main className={`p-8 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
+            {/* Mini Sidebar (Collapsed State) - Icon Only */}
+            <nav className={`fixed left-0 top-0 h-full w-16 bg-[#0F172A] text-white shadow-2xl transition-transform duration-300 z-40 ${!sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}>
+                <div className="flex flex-col items-center py-6 space-y-6">
+                    {/* Logo Icon */}
+                    <div className="w-10 h-10 bg-gradient-to-tr from-[#38BDF8] to-white rounded-lg mb-4"></div>
+
+                    {/* Navigation Icons */}
+                    <div
+                        className="w-12 h-12 flex items-center justify-center bg-[#1e293b] rounded-lg cursor-pointer hover:bg-[#38BDF8] transition-colors group relative"
+                        title="Dashboard"
+                    >
+                        <span className="text-2xl">📊</span>
+                        {/* Tooltip */}
+                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Dashboard
+                        </div>
+                    </div>
+
+                    <div
+                        onClick={() => window.location.href = '/admin/vagas'}
+                        className="w-12 h-12 flex items-center justify-center hover:bg-[#1e293b] rounded-lg cursor-pointer transition-colors group relative"
+                        title="Vagas"
+                    >
+                        <span className="text-2xl">📋</span>
+                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Vagas
+                        </div>
+                    </div>
+
+                    <div
+                        onClick={() => window.location.href = '/admin/candidatos'}
+                        className="w-12 h-12 flex items-center justify-center hover:bg-[#1e293b] rounded-lg cursor-pointer transition-colors group relative"
+                        title="Candidatos"
+                    >
+                        <span className="text-2xl">👤</span>
+                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Candidatos
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <main className={`p-8 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'
                 }`}>
                 {/* Header Section */}
                 <header className="flex justify-between items-center mb-10">
