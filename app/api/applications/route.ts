@@ -19,8 +19,7 @@ export async function GET() {
                         linkedinUrl: true,
                         portfolioUrl: true,
                         resumeFileUrl: true,
-                        createdAt: true,
-                        notes: true
+                        createdAt: true
                     }
                 },
                 job: true,

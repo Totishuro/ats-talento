@@ -18,10 +18,7 @@ export async function GET(
         });
 
         if (!candidate || !candidate.resumeData) {
-            return NextResponse.json(
-                { error: 'Currículo não encontrado' },
-                { status: 404 }
-            );
+            return new NextResponse('Currículo não encontrado no banco de dados.', { status: 404 });
         }
 
         // Determine File Extension
