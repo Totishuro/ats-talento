@@ -31,7 +31,7 @@ export async function GET(
         const filename = `Curriculo_${candidate.fullName.replace(/\s+/g, '_')}.${extension}`;
 
         // Create response with file data
-        return new NextResponse(candidate.resumeData, {
+        return new NextResponse(candidate.resumeData as any, {
             headers: {
                 'Content-Type': contentType,
                 'Content-Disposition': `attachment; filename="${filename}"`,
