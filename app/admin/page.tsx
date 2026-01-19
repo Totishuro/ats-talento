@@ -27,6 +27,7 @@ interface Application {
     id: string;
     currentStage: ApplicationStage;
     appliedAt: string;
+    createdAt: string;
     candidate: Candidate;
     job: Job;
     salaryExpectation?: string;
@@ -51,16 +52,34 @@ export default function AdminPanel() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [mounted, setMounted] = useState(false);
 
+    // Calculate KPIs
+    const activeApplications = applications.filter(app =>
+        app.currentStage !== 'REJECTED' && app.currentStage !== 'HIRED'
+    );
+
+    const avgHiringTime = applications.length > 0
+        ? Math.round(
+            applications.reduce((sum, app) => {
+                const days = Math.floor(
+                    (new Date().getTime() - new Date(app.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+                );
+                return sum + days;
+            }, 0) / applications.length
+        )
+        : 0;
+
+    const conversionRate = applications.length > 0
+        ? Math.round((applications.filter(app => app.currentStage === 'HIRED').length / applications.length) * 100)
+        : 0;
+
     // Rejection Modal State
     const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
-    const [rejectionData, setRejectionData] = useState<{
-        id: string;
-        candidateName: string;
-        jobTitle: string;
-        preview: string;
-        validations: any;
-    } | null>(null);
+    const [rejectionApplication, setRejectionApplication] = useState<Application | null>(null);
+    const [feedbackType, setFeedbackType] = useState<'positive' | 'constructive'>('constructive');
     const [rejectionReason, setRejectionReason] = useState('Falta de experiência técnica');
+    const [rejectionFeedback, setRejectionFeedback] = useState('');
+    const [ccEmail, setCcEmail] = useState('');
+    const [ccHR, setCcHR] = useState(true);
 
     useEffect(() => {
         setMounted(true);
@@ -401,8 +420,10 @@ export default function AdminPanel() {
                             <span className="text-slate-500 font-medium uppercase text-xs tracking-wider">Candidatos Ativos</span>
                             <span className="bg-blue-50 text-blue-600 p-2 rounded-lg text-lg">👤</span>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">{applications.length}</div>
-                        <div className="mt-2 text-sm text-green-500 font-medium">↑ 12% desde ontem</div>
+                        <div className="text-3xl font-bold text-[#0F172A]">{activeApplications.length}</div>
+                        <div className="mt-2 text-sm text-slate-400 font-medium">
+                            {activeApplications.length === 0 ? 'Nenhum candidato ativo' : `${applications.length} total`}
+                        </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
@@ -410,8 +431,12 @@ export default function AdminPanel() {
                             <span className="text-slate-500 font-medium uppercase text-xs tracking-wider">Tempo Médio (Hiring)</span>
                             <span className="bg-purple-50 text-purple-600 p-2 rounded-lg text-lg">⏱️</span>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">18 dias</div>
-                        <div className="mt-2 text-sm text-slate-400 font-medium">Meta: 21 dias</div>
+                        <div className="text-3xl font-bold text-[#0F172A]">
+                            {avgHiringTime > 0 ? `${avgHiringTime} dias` : '-'}
+                        </div>
+                        <div className="mt-2 text-sm text-slate-400 font-medium">
+                            {avgHiringTime > 0 ? 'Meta: 21 dias' : 'Sem dados suficientes'}
+                        </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
@@ -430,8 +455,12 @@ export default function AdminPanel() {
                             <span className="text-slate-500 font-medium uppercase text-xs tracking-wider">Taxa de Conversão</span>
                             <span className="bg-green-50 text-green-600 p-2 rounded-lg text-lg">📈</span>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">64%</div>
-                        <div className="mt-2 text-sm text-green-500 font-medium">↑ 5% este mês</div>
+                        <div className="text-3xl font-bold text-[#0F172A]">
+                            {conversionRate > 0 ? `${conversionRate}%` : '-'}
+                        </div>
+                        <div className="mt-2 text-sm text-slate-400 font-medium">
+                            {conversionRate > 0 ? `${applications.filter(a => a.currentStage === 'HIRED').length} contratados` : 'Sem contratações'}
+                        </div>
                     </div>
                 </section>
 
