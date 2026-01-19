@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+
 
 export async function POST(request: Request) {
     try {
@@ -20,18 +19,17 @@ export async function POST(request: Request) {
         };
 
         const resumeFile = formData.get('resumeFile') as File | null;
+        let resumeBuffer: Buffer | null = null;
+        let resumeType: string | null = null;
         let resumeFileUrl = null;
 
         if (resumeFile) {
             const bytes = await resumeFile.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-
-            const fileName = `${Date.now()}_${resumeFile.name.replace(/\s+/g, '_')}`;
-            const path = join(process.cwd(), 'public', 'uploads', fileName);
-
-            await writeFile(path, buffer);
-            resumeFileUrl = `/uploads/${fileName}`;
-            console.log(`📎 Resume file saved: ${fileName} (${resumeFile.size} bytes)`);
+            resumeBuffer = Buffer.from(bytes);
+            resumeType = resumeFile.type;
+            // The URL will be constructed dynamically, but we can store a reference
+            resumeFileUrl = 'db_stored';
+            console.log(`📎 Resume file processed: ${resumeFile.name} (${resumeFile.size} bytes, ${resumeType})`);
         }
 
         // Garantir que existe uma vaga padrão
@@ -59,9 +57,12 @@ export async function POST(request: Request) {
                 phone: data.phone,
                 city: data.city,
                 state: data.state,
+                country: 'Brasil', // Default
                 linkedinUrl: data.linkedinUrl || null,
                 portfolioUrl: data.portfolioUrl || null,
                 resumeFileUrl: resumeFileUrl,
+                resumeData: resumeBuffer,
+                resumeContentType: resumeType,
                 applications: {
                     create: {
                         jobId: job.id,

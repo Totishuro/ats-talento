@@ -22,6 +22,8 @@ model Candidate {
   linkedinUrl     String?
   portfolioUrl    String?
   resumeFileUrl   String?
+  resumeData      Bytes?
+  resumeContentType String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   

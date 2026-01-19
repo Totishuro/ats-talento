@@ -419,8 +419,7 @@ export default function CandidatesPage() {
                                             <td className="px-4 py-5 whitespace-nowrap">
                                                 {candidate.resumeFileUrl ? (
                                                     <a
-                                                        href={candidate.resumeFileUrl}
-                                                        download
+                                                        href={`/api/candidates/${candidate.id}/resume`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#38BDF8] text-white rounded-lg font-bold text-xs hover:brightness-110 transition-all"

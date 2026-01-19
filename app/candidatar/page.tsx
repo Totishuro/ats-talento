@@ -212,7 +212,17 @@ export default function CandidateForm() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFormData({ ...formData, resumeFile: e.target.files[0] });
+            const file = e.target.files[0];
+            const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+            if (file.size > MAX_SIZE) {
+                alert('⚠️ O arquivo é muito grande! Por favor, envie um arquivo com no máximo 5MB.');
+                e.target.value = ''; // Clear input
+                setFormData({ ...formData, resumeFile: null });
+                return;
+            }
+
+            setFormData({ ...formData, resumeFile: file });
         }
     };
 
