@@ -216,7 +216,7 @@ export default function JobsManagement() {
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold mb-2">Gerenciamento de Vagas</h1>
-                        <p className="text-slate-300">Crie e gerencie as oportunidades</p>
+                        <p className="text-white">Crie e gerencie as oportunidades</p>
                     </div>
                     <button
                         onClick={() => router.push('/admin')}
@@ -258,75 +258,75 @@ export default function JobsManagement() {
                 {/* Form */}
                 {showForm && (
                     <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-                        <h2 className="text-2xl font-bold mb-6">
+                        <h2 className="text-2xl font-bold text-black mb-6">
                             {editingJob ? 'Editar Vaga' : 'Nova Vaga'}
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                                 <p className="text-sm text-blue-900 font-bold mb-2">🏢 Empresa Cliente</p>
-                                <p className="text-sm text-blue-800 mb-3">A Talento conecta talentos com empresas. Informe qual empresa está contratando:</p>
+                                <p className="text-sm text-black mb-3">A Talento conecta talentos com empresas. Informe qual empresa está contratando:</p>
                                 <input
                                     type="text"
                                     required
                                     value={formData.companyName}
                                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                                    className="w-full px-4 py-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black"
                                     placeholder="Ex: Tech Solutions LTDA"
                                 />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Título da Vaga *</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Título da Vaga *</label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                         placeholder="Ex: Desenvolvedor Full Stack"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Departamento *</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Departamento *</label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.department}
                                         onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                         placeholder="Ex: Tecnologia"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Descrição da Vaga</label>
+                                <label className="block text-sm font-medium text-black mb-1">Descrição da Vaga</label>
                                 <textarea
                                     rows={4}
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-2 border rounded-md"
+                                    className="w-full px-4 py-2 border rounded-md text-black"
                                     placeholder="Descreva as responsabilidades e atividades..."
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Requisitos</label>
+                                <label className="block text-sm font-medium text-black mb-1">Requisitos</label>
                                 <textarea
                                     rows={4}
                                     value={formData.requirements}
                                     onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                                    className="w-full px-4 py-2 border rounded-md"
+                                    className="w-full px-4 py-2 border rounded-md text-black"
                                     placeholder="Liste os requisitos necessários..."
                                 />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="relative">
-                                    <label className="block text-sm font-medium mb-1">Estado (UF)</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Estado (UF)</label>
                                     <input
                                         type="text"
                                         required
@@ -335,7 +335,7 @@ export default function JobsManagement() {
                                         onFocus={() => formData.state.length > 0 && setShowStateSuggestions(true)}
                                         maxLength={2}
                                         autoComplete="off"
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                         placeholder="EX: SP"
                                     />
                                     {showStateSuggestions && stateSuggestions.length > 0 && (
@@ -354,7 +354,7 @@ export default function JobsManagement() {
                                 </div>
 
                                 <div className="relative">
-                                    <label className="block text-sm font-medium mb-1">Cidade</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Cidade</label>
                                     <input
                                         type="text"
                                         required
@@ -362,7 +362,7 @@ export default function JobsManagement() {
                                         onChange={handleCityChange}
                                         onFocus={() => formData.city.length > 1 && setShowCitySuggestions(true)}
                                         autoComplete="off"
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                         placeholder="Ex: São Paulo"
                                     />
                                     {showCitySuggestions && filteredCitySuggestions.length > 0 && (
@@ -381,11 +381,11 @@ export default function JobsManagement() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Modelo de Trabalho</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Modelo de Trabalho</label>
                                     <select
                                         value={formData.workMode}
                                         onChange={(e) => setFormData({ ...formData, workMode: e.target.value })}
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                     >
                                         <option value="PRESENCIAL">Presencial</option>
                                         <option value="HIBRIDO">Híbrido</option>
@@ -394,15 +394,15 @@ export default function JobsManagement() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Faixa Salarial Pública</label>
+                                    <label className="block text-sm font-medium text-black mb-1">Faixa Salarial Pública</label>
                                     <input
                                         type="text"
                                         value={formData.salaryRange}
                                         onChange={(e) => setFormData({ ...formData, salaryRange: e.target.value })}
-                                        className="w-full px-4 py-2 border rounded-md"
+                                        className="w-full px-4 py-2 border rounded-md text-black"
                                         placeholder="Ex: R$ 5.000 - 8.000"
                                     />
-                                    <p className="text-xs text-gray-800 mt-1">Será exibida para candidatos</p>
+                                    <p className="text-xs text-black mt-1">Será exibida para candidatos</p>
                                 </div>
                             </div>
 
@@ -415,17 +415,17 @@ export default function JobsManagement() {
                                     type="text"
                                     value={formData.salaryBudget}
                                     onChange={(e) => setFormData({ ...formData, salaryBudget: e.target.value })}
-                                    className="w-full px-4 py-2 border border-yellow-300 rounded-md bg-white"
+                                    className="w-full px-4 py-2 border border-yellow-300 rounded-md bg-white text-black"
                                     placeholder="Ex: R$ 10.000 (máximo que a empresa vai pagar)"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Status</label>
+                                <label className="block text-sm font-medium text-black mb-1">Status</label>
                                 <select
                                     value={formData.status}
                                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                    className="w-full px-4 py-2 border rounded-md"
+                                    className="w-full px-4 py-2 border rounded-md text-black"
                                 >
                                     <option value="DRAFT">Rascunho (não visível)</option>
                                     <option value="OPEN">Aberta (publicada)</option>
@@ -458,10 +458,10 @@ export default function JobsManagement() {
                 {/* Jobs List */}
                 <div className="bg-white rounded-lg shadow">
                     <div className="p-6">
-                        <h2 className="text-xl font-semibold mb-4">Vagas Cadastradas ({jobs.length})</h2>
+                        <h2 className="text-xl font-semibold text-black mb-4">Vagas Cadastradas ({jobs.length})</h2>
 
                         {jobs.length === 0 ? (
-                            <p className="text-gray-800 text-center py-8">
+                            <p className="text-black text-center py-8">
                                 Nenhuma vaga cadastrada ainda. Clique em "Nova Vaga" para começar.
                             </p>
                         ) : (
@@ -474,17 +474,17 @@ export default function JobsManagement() {
                                         <div className="flex justify-between items-start">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <h3 className="text-lg font-semibold">{job.title}</h3>
+                                                    <h3 className="text-lg font-semibold text-black">{job.title}</h3>
                                                     {getStatusBadge(job.status)}
                                                 </div>
                                                 <p className="text-sm font-semibold text-blue-600 mb-1">🏢 {job.companyName}</p>
-                                                <p className="text-sm text-gray-900 mb-2">{job.department}</p>
+                                                <p className="text-sm text-black mb-2">{job.department}</p>
                                                 {job.description && (
-                                                    <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                                                    <p className="text-sm text-black mb-2 line-clamp-2">
                                                         {job.description}
                                                     </p>
                                                 )}
-                                                <div className="flex flex-wrap gap-3 text-sm text-gray-800">
+                                                <div className="flex flex-wrap gap-3 text-sm text-black">
                                                     {(job.city || job.state) && <span>📍 {job.city}{job.city && job.state ? ', ' : ''}{job.state}</span>}
                                                     {job.workMode && <span>💼 {job.workMode}</span>}
                                                     {job.salaryRange && <span>💰 Público: {job.salaryRange}</span>}

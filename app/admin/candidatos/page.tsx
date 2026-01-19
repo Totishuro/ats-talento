@@ -60,7 +60,7 @@ export default function CandidatesPage() {
     const router = useRouter();
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     // Edit states
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
