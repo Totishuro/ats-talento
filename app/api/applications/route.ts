@@ -6,22 +6,7 @@ export async function GET() {
     try {
         const applications = await prisma.application.findMany({
             include: {
-                candidate: {
-                    select: {
-                        id: true,
-                        fullName: true,
-                        email: true,
-                        phone: true,
-                        cpf: true,
-                        city: true,
-                        state: true,
-                        country: true,
-                        linkedinUrl: true,
-                        portfolioUrl: true,
-                        resumeFileUrl: true,
-                        createdAt: true
-                    }
-                },
+                candidate: true,
                 job: true,
                 stageHistory: true,
             },

@@ -11,18 +11,38 @@ interface Note {
 interface Candidate {
     id: string;
     fullName: string;
+    cpf: string;
+    birthDate?: string;
     email: string;
     phone: string;
+    cep?: string;
+    address: string;
+    neighborhood?: string;
     city: string;
     state: string;
+    country: string;
+    aboutMe?: string;
+    currentSalary?: number;
+    expectedSalary?: number;
+    employmentStatus?: string;
+    startAvailability?: string;
+    scheduleAvailability?: string;
+    bestInterviewTime?: string;
+    technicalSkills: string[];
+    driverLicense: string[];
     linkedinUrl?: string;
     portfolioUrl?: string;
-    notes: Note[];
+    resumeFileUrl?: string;
+    recruiterNotes?: string;
+    consentDate?: string;
+    consentIp?: string;
+    createdAt: string;
 }
 
 interface Job {
     id: string;
     title: string;
+    companyName?: string;
 }
 
 interface Application {
@@ -32,8 +52,7 @@ interface Application {
     createdAt: string;
     candidate: Candidate;
     job: Job;
-    salaryExpectation?: string;
-    score?: number;
+    recruiterNotes?: string;
 }
 
 
@@ -43,7 +62,6 @@ export default function AdminPanel() {
     const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(true);
     const [draggedItem, setDraggedItem] = useState<Application | null>(null);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     // Calculate KPIs
@@ -87,14 +105,14 @@ export default function AdminPanel() {
 
     // Stage Management State
     const [stages, setStages] = useState([
-        { id: 'APPLIED', name: 'Inscritos', color: 'bg-white border-l-4 border-gray-300' },
-        { id: 'SCREENING', name: 'Triagem', color: 'bg-white border-l-4 border-blue-400' },
-        { id: 'HR_INTERVIEW', name: 'Entrevista RH', color: 'bg-white border-l-4 border-purple-400' },
-        { id: 'TECHNICAL_INTERVIEW', name: 'Entrevista Técnica', color: 'bg-white border-l-4 border-yellow-400' },
-        { id: 'PROPOSAL_SENT', name: 'Proposta Enviada', color: 'bg-white border-l-4 border-orange-400' },
-        { id: 'HIRED', name: 'Contratado', color: 'bg-white border-l-4 border-green-500' },
-        { id: 'REJECTED', name: 'Reprovado', color: 'bg-white border-l-4 border-red-500' },
-        { id: 'TALENT_POOL', name: 'Banco de Talentos', color: 'bg-white border-l-4 border-indigo-400' },
+        { id: 'TRIAGEM', name: 'Triagem / Entrada', color: 'bg-white border-l-4 border-gray-300' },
+        { id: 'SCREENING', name: 'Hunting / Screening', color: 'bg-white border-l-4 border-blue-400' },
+        { id: 'ENTREVISTA_RH', name: 'Entrevista RH', color: 'bg-white border-l-4 border-purple-400' },
+        { id: 'ENTREVISTA_LIDERANCA', name: 'Alinhamento Liderança', color: 'bg-white border-l-4 border-yellow-400' },
+        { id: 'PROPOSTA', name: 'Proposta Enviada', color: 'bg-white border-l-4 border-blue-400' },
+        { id: 'STANDBY', name: 'Aguardando / Standby', color: 'bg-white border-l-4 border-orange-400' },
+        { id: 'ADMISSAO', name: 'Proposta / Admissão', color: 'bg-white border-l-4 border-green-500' },
+        { id: 'REPROVADO', name: 'Reprovado', color: 'bg-white border-l-4 border-red-500' },
     ]);
     const [editingStageId, setEditingStageId] = useState<string | null>(null);
     const [editingStageName, setEditingStageName] = useState('');
@@ -102,6 +120,11 @@ export default function AdminPanel() {
     const [isAddStageModalOpen, setIsAddStageModalOpen] = useState(false);
     const [newStageName, setNewStageName] = useState('');
     const [draggedStageId, setDraggedStageId] = useState<string | null>(null);
+
+    // Drill-down Modal State
+    const [isDrillDownOpen, setIsDrillDownOpen] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+    const [savingNotes, setSavingNotes] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -186,6 +209,28 @@ export default function AdminPanel() {
         setIsRejectionModalOpen(true);
     };
 
+    const handleSaveNotes = async (appId: string, notes: string) => {
+        setSavingNotes(true);
+        try {
+            const response = await fetch(`/api/applications/${appId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recruiterNotes: notes }),
+            });
+            if (response.ok) {
+                await fetchApplications();
+                // Update selected application locally to reflect changes
+                if (selectedApplication?.id === appId) {
+                    setSelectedApplication(prev => prev ? { ...prev, recruiterNotes: notes } : null);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao salvar notas:', error);
+        } finally {
+            setSavingNotes(false);
+        }
+    };
+
     const handleConfirmRejection = async () => {
         if (!rejectionApplication) return;
 
@@ -213,13 +258,14 @@ export default function AdminPanel() {
 
     const exportToCSV = () => {
         // CSV Headers
-        const headers = ['Nome', 'Email', 'Telefone', 'Cidade', 'Estado', 'LinkedIn', 'Portfolio', 'Cadastrado em'];
+        const headers = ['Nome', 'Email', 'Telefone', 'CEP', 'Cidade', 'Estado', 'LinkedIn', 'Portfolio', 'Cadastrado em'];
 
         // Convert applications to CSV rows
         const rows = applications.map(app => [
             app.candidate.fullName,
             app.candidate.email,
             app.candidate.phone,
+            app.candidate.cep || '-',
             app.candidate.city,
             app.candidate.state,
             app.candidate.linkedinUrl || '-',
@@ -391,6 +437,193 @@ export default function AdminPanel() {
 
     return (
         <div className="min-h-screen bg-[#F1F5F9]">
+            {/* Drill-down Modal */}
+            {isDrillDownOpen && selectedApplication && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[2rem] shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+                        {/* Header */}
+                        <div className="bg-[#0F172A] p-8 text-white relative">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-20 h-20 rounded-2xl bg-blue-500 flex items-center justify-center text-3xl font-bold shadow-lg shadow-blue-500/20">
+                                        {selectedApplication.candidate.fullName.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-3xl font-bold mb-1">{selectedApplication.candidate.fullName}</h3>
+                                        <div className="flex items-center gap-3 text-blue-200 font-medium">
+                                            <span>{selectedApplication.job.title}</span>
+                                            <span className="opacity-30">•</span>
+                                            <span className="bg-blue-500/20 px-2 py-0.5 rounded text-xs uppercase tracking-wider border border-blue-500/30">
+                                                {stages.find(s => s.id === selectedApplication.currentStage)?.name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsDrillDownOpen(false)}
+                                    className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-white"
+                                >
+                                    <span className="text-2xl font-light">✕</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                {/* Left Column: Info Sections */}
+                                <div className="lg:col-span-2 space-y-8">
+                                    {/* Personal Info */}
+                                    <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <span className="text-lg">👤</span> Dados Pessoais
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">CPF</label>
+                                                <div className="font-bold text-slate-900">{selectedApplication.candidate.cpf}</div>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">Nascimento</label>
+                                                <div className="font-bold text-slate-900">
+                                                    {selectedApplication.candidate.birthDate ? new Date(selectedApplication.candidate.birthDate).toLocaleDateString('pt-BR') : '-'}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">Email</label>
+                                                <div className="font-bold text-blue-600">{selectedApplication.candidate.email}</div>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">WhatsApp</label>
+                                                <div className="font-bold text-slate-900">{selectedApplication.candidate.phone}</div>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">CEP</label>
+                                                <div className="font-bold text-slate-900">{selectedApplication.candidate.cep || '-'}</div>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <label className="text-xs font-bold text-slate-400 block mb-1">Endereço</label>
+                                                <div className="font-bold text-slate-900">
+                                                    {selectedApplication.candidate.address}, {selectedApplication.candidate.neighborhood} — {selectedApplication.candidate.city}/{selectedApplication.candidate.state}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Professional Info */}
+                                    <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <span className="text-lg">💼</span> Experiência e Pretensão
+                                        </h4>
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 block mb-2">Resumo Profissional</label>
+                                                <p className="text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl italic">
+                                                    "{selectedApplication.candidate.aboutMe || 'Nenhum resumo fornecido.'}"
+                                                </p>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-xs font-bold text-slate-400 block mb-1">Expectativa Salarial</label>
+                                                    <div className="font-bold text-green-600 text-lg">
+                                                        {selectedApplication.candidate.expectedSalary ? `R$ ${selectedApplication.candidate.expectedSalary.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-bold text-slate-400 block mb-1">Disponibilidade</label>
+                                                    <div className="font-bold text-slate-900">{selectedApplication.candidate.startAvailability || '-'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    {/* Skills and Driver License */}
+                                    <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                                        <div className="grid grid-cols-2 gap-8">
+                                            <div>
+                                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">🛠️ Skills</h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {selectedApplication.candidate.technicalSkills?.map(skill => (
+                                                        <span key={skill} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">{skill}</span>
+                                                    )) || '-'}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">🚗 CNH</h4>
+                                                <div className="flex gap-2">
+                                                    {selectedApplication.candidate.driverLicense?.map(lic => (
+                                                        <span key={lic} className="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 rounded text-xs font-black border border-blue-200">{lic}</span>
+                                                    )) || '-'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {/* Right Column: Sidebar Actions & Notes */}
+                                <div className="space-y-8">
+                                    {/* Actions */}
+                                    <section className="space-y-3">
+                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">Ações Rápidas</h4>
+                                        <button
+                                            onClick={() => window.open(`/api/resume/${selectedApplication.candidate.id}`, '_blank')}
+                                            className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                                        >
+                                            📄 Abrir Currículo PDF
+                                        </button>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {selectedApplication.candidate.linkedinUrl && (
+                                                <a href={selectedApplication.candidate.linkedinUrl} target="_blank" className="bg-white border-2 border-slate-200 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-50 transition-all text-center text-sm flex items-center justify-center gap-2">
+                                                    <span>🔗</span> LinkedIn
+                                                </a>
+                                            )}
+                                            {selectedApplication.candidate.portfolioUrl && (
+                                                <a href={selectedApplication.candidate.portfolioUrl} target="_blank" className="bg-white border-2 border-slate-200 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-50 transition-all text-center text-sm flex items-center justify-center gap-2">
+                                                    <span>🌐</span> Portfolio
+                                                </a>
+                                            )}
+                                        </div>
+                                    </section>
+
+                                    {/* Internal Notes */}
+                                    <section className="bg-yellow-50/50 p-6 rounded-3xl border-2 border-yellow-100/50 flex flex-col gap-4">
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="text-sm font-bold text-yellow-800 flex items-center gap-2">
+                                                <span className="text-lg">📝</span> Notas do Recrutador
+                                            </h4>
+                                            {savingNotes && <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded animate-pulse font-bold">SALVANDO...</span>}
+                                        </div>
+                                        <textarea
+                                            defaultValue={selectedApplication.recruiterNotes || ''}
+                                            onBlur={(e) => handleSaveNotes(selectedApplication.id, e.target.value)}
+                                            className="w-full bg-white border-2 border-yellow-200 rounded-2xl p-4 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 min-h-[200px] transition-all"
+                                            placeholder="Adicione observações internas sobre este candidato..."
+                                        />
+                                        <p className="text-[10px] text-yellow-600 font-medium">As notas são salvas automaticamente ao clicar fora do campo.</p>
+                                    </section>
+
+                                    {/* Meta Info */}
+                                    <div className="px-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest space-y-2">
+                                        <div>Aplicado em: {new Date(selectedApplication.appliedAt).toLocaleString('pt-BR')}</div>
+                                        <div>Consentimento IP: {selectedApplication.candidate.consentIp || '127.0.0.1'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 bg-white border-t border-slate-100 flex justify-end gap-4">
+                            <button
+                                onClick={() => setIsDrillDownOpen(false)}
+                                className="bg-slate-100 text-slate-600 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-all"
+                            >
+                                Fechar Detalhes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Rejection Modal - Spec 5.3 */}
             {isRejectionModalOpen && rejectionApplication && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -609,117 +842,7 @@ export default function AdminPanel() {
 
 
 
-            {/* Sidebar Toggle Button */}
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="fixed top-4 left-4 z-50 lg:hidden bg-[#0F172A] text-white p-3 rounded-lg shadow-xl hover:brightness-110 transition-all"
-            >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-
-            {/* Desktop Sidebar Toggle */}
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="hidden lg:block fixed top-4 z-30 bg-[#0F172A] text-white p-2.5 rounded-r-lg shadow-xl hover:brightness-110 transition-all"
-                style={{ left: sidebarOpen ? '256px' : '0px' }}
-            >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {sidebarOpen ? (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                    ) : (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                    )}
-                </svg>
-            </button>
-
-            {/* Sidebar / Sidebar Mock (Simplified based on spec) */}
-            <nav className={`fixed left-0 top-0 h-full w-64 bg-[#0F172A] text-white p-6 shadow-2xl transition-transform duration-300 z-40 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}>
-                <div className="mb-12 flex items-center gap-3">
-                    <img src="/LogoBranco.png" alt="Talento" className="w-10 h-10 object-contain" />
-                    <span className="text-xl font-bold tracking-tight">Talento</span>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="p-3 bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3">
-                        <span className="text-xl">📊</span> Dashboard
-                    </div>
-                    <div
-                        onClick={() => window.location.href = '/admin/vagas'}
-                        className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors"
-                    >
-                        <span className="text-xl">📋</span> Vagas
-                    </div>
-                    <div
-                        onClick={() => window.location.href = '/admin/candidatos'}
-                        className="p-3 hover:bg-[#1e293b] rounded-lg cursor-pointer flex items-center gap-3 text-slate-400 hover:text-white transition-colors"
-                    >
-                        <span className="text-xl">👤</span> Candidatos
-                    </div>
-                </div>
-            </nav>
-
-            {/* Mini Sidebar (Collapsed State) - Icon Only */}
-            <nav className={`fixed left-0 top-0 h-full w-16 bg-[#0F172A] text-white shadow-2xl transition-transform duration-300 z-40 ${!sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}>
-                <div className="flex flex-col items-center py-6 space-y-6">
-                    {/* Expand Button at Top */}
-                    <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="w-12 h-12 flex items-center justify-center bg-[#38BDF8] hover:bg-[#0EA5E9] rounded-lg cursor-pointer transition-colors mb-4"
-                        title="Expandir menu"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                        </svg>
-                    </button>
-
-                    {/* Logo Icon */}
-                    <img src="/LogoBranco.png" alt="Talento" className="w-10 h-10 object-contain" />
-
-                    {/* Divider */}
-                    <div className="w-10 h-px bg-white/20"></div>
-
-                    {/* Navigation Icons */}
-                    <div
-                        className="w-12 h-12 flex items-center justify-center bg-[#1e293b] rounded-lg cursor-pointer hover:bg-[#38BDF8] transition-colors group relative"
-                        title="Dashboard"
-                    >
-                        <span className="text-2xl">📊</span>
-                        {/* Tooltip */}
-                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                            Dashboard
-                        </div>
-                    </div>
-
-                    <div
-                        onClick={() => window.location.href = '/admin/vagas'}
-                        className="w-12 h-12 flex items-center justify-center hover:bg-[#1e293b] rounded-lg cursor-pointer transition-colors group relative"
-                        title="Vagas"
-                    >
-                        <span className="text-2xl">📋</span>
-                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                            Vagas
-                        </div>
-                    </div>
-
-                    <div
-                        onClick={() => window.location.href = '/admin/candidatos'}
-                        className="w-12 h-12 flex items-center justify-center hover:bg-[#1e293b] rounded-lg cursor-pointer transition-colors group relative"
-                        title="Candidatos"
-                    >
-                        <span className="text-2xl">👤</span>
-                        <div className="absolute left-full ml-2 px-3 py-2 bg-[#1e293b] rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                            Candidatos
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <main className={`p-8 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'
-                }`}>
+            <main className="p-8 w-full transition-all duration-300">
                 {/* Header Section */}
                 <header className="flex justify-between items-center mb-10">
                     <div>
@@ -740,52 +863,87 @@ export default function AdminPanel() {
                 </header>
 
                 {/* KPIs Dashboard - Spec 3.42 */}
+                {/* KPIs Dashboard - Modern Design */}
                 <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    {/* Active Candidates */}
+                    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 group hover:border-blue-200 transition-all duration-300">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-black font-medium uppercase text-xs tracking-wider">Candidatos Ativos</span>
-                            <span className="bg-blue-50 text-blue-600 p-2 rounded-lg text-lg">👤</span>
+                            <div>
+                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Candidatos Ativos</p>
+                                <h3 className="text-3xl font-extrabold text-slate-900">{activeApplications.length}</h3>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                                👤
+                            </div>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">{activeApplications.length}</div>
-                        <div className="mt-2 text-sm text-black font-medium">
-                            {activeApplications.length === 0 ? 'Nenhum candidato ativo' : `${applications.length} total`}
+                        <div className="flex items-center gap-2 text-sm">
+                            <span className="text-slate-400 font-medium">
+                                {activeApplications.length === 0 ? 'Nenhum ativo no momento' : 'Em processos seletivos'}
+                            </span>
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    {/* Hiring Time */}
+                    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 group hover:border-purple-200 transition-all duration-300">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-black font-medium uppercase text-xs tracking-wider">Tempo Médio (Hiring)</span>
-                            <span className="bg-purple-50 text-purple-600 p-2 rounded-lg text-lg">⏱️</span>
+                            <div>
+                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Tempo de Contratação</p>
+                                <h3 className="text-3xl font-extrabold text-slate-900">{avgHiringTime > 0 ? avgHiringTime : '-'} <span className="text-lg text-slate-400 font-medium">dias</span></h3>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                                ⏱️
+                            </div>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">
-                            {avgHiringTime > 0 ? `${avgHiringTime} dias` : '-'}
-                        </div>
-                        <div className="mt-2 text-sm text-black font-medium">
-                            {avgHiringTime > 0 ? 'Meta: 21 dias' : 'Sem dados suficientes'}
+                        <div className="flex items-center gap-2 text-sm">
+                            {avgHiringTime > 21 ? (
+                                <span className="text-red-500 font-bold flex items-center gap-1">
+                                    ↑ Acima da meta (21d)
+                                </span>
+                            ) : (
+                                <span className="text-green-500 font-bold flex items-center gap-1">
+                                    ↓ Dentro da meta (21d)
+                                </span>
+                            )}
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    {/* Final Stage */}
+                    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 group hover:border-orange-200 transition-all duration-300">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-black font-medium uppercase text-xs tracking-wider">Etapa Final</span>
-                            <span className="bg-orange-50 text-orange-600 p-2 rounded-lg text-lg">📄</span>
+                            <div>
+                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Fase Final/Proposta</p>
+                                <h3 className="text-3xl font-extrabold text-slate-900">{getApplicationsByStage('PROPOSTA').length}</h3>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                                📄
+                            </div>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">
-                            {getApplicationsByStage('PROPOSAL_SENT').length}
+                        <div className="flex items-center gap-2 text-sm">
+                            <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                                <div
+                                    className="bg-orange-500 h-full rounded-full"
+                                    style={{ width: `${(getApplicationsByStage('PROPOSTA').length / (applications.length || 1)) * 100}%` }}
+                                ></div>
+                            </div>
+                            <span className="text-slate-400 text-xs whitespace-nowrap">vs Total</span>
                         </div>
-                        <div className="mt-2 text-sm text-black font-medium font-medium">Candidatos com proposta</div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    {/* Conversion Rate */}
+                    <div className="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-slate-100 group hover:border-green-200 transition-all duration-300">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-black font-medium uppercase text-xs tracking-wider">Taxa de Conversão</span>
-                            <span className="bg-green-50 text-green-600 p-2 rounded-lg text-lg">📈</span>
+                            <div>
+                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Conversão em Contratação</p>
+                                <h3 className="text-3xl font-extrabold text-slate-900">{conversionRate}%</h3>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                                📈
+                            </div>
                         </div>
-                        <div className="text-3xl font-bold text-[#0F172A]">
-                            {conversionRate > 0 ? `${conversionRate}%` : '-'}
-                        </div>
-                        <div className="mt-2 text-sm text-black font-medium">
-                            {conversionRate > 0 ? `${applications.filter(a => a.currentStage === 'HIRED').length} contratados` : 'Sem contratações'}
+                        <div className="flex items-center gap-2 text-sm">
+                            <span className="text-slate-500 font-medium">
+                                {applications.filter(a => a.currentStage === 'HIRED').length} contratações realizadas
+                            </span>
                         </div>
                     </div>
                 </section>
@@ -875,7 +1033,7 @@ export default function AdminPanel() {
                         </div>
                     </div>
 
-                    <div className="flex gap-6 min-h-[600px] overflow-x-auto pb-4">
+                    <div className="flex gap-6 min-h-[600px] overflow-x-auto pb-4 max-w-[calc(100vw-6rem)] lg:max-w-[calc(100vw-18rem)]">
                         {stages.map((stage) => (
                             <div
                                 key={stage.id}
@@ -957,13 +1115,24 @@ export default function AdminPanel() {
                                             key={app.id}
                                             draggable
                                             onDragStart={() => handleDragStart(app)}
-                                            className={`${stage.color} p-5 rounded-2xl shadow-sm cursor-move hover:shadow-xl hover:-translate-y-1 transition-all group`}
+                                            onClick={() => {
+                                                setSelectedApplication(app);
+                                                setIsDrillDownOpen(true);
+                                            }}
+                                            className={`${stage.color} p-5 rounded-2xl shadow-sm cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all group`}
                                         >
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="w-10 h-10 rounded-full bg-[#0F172A] flex items-center justify-center text-white font-bold text-sm">
                                                     {app.candidate.fullName.charAt(0)}
                                                 </div>
-                                                <span className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">⠿</span>
+                                                <div className="flex gap-2">
+                                                    {app.candidate.linkedinUrl && (
+                                                        <a href={app.candidate.linkedinUrl} target="_blank" onClick={(e) => e.stopPropagation()} className="w-6 h-6 flex items-center justify-center bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
+                                                            in
+                                                        </a>
+                                                    )}
+                                                    <span className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">⠿</span>
+                                                </div>
                                             </div>
 
                                             <h4 className="font-bold text-[#0F172A] mb-1">{app.candidate.fullName}</h4>
@@ -971,13 +1140,11 @@ export default function AdminPanel() {
 
                                             <div className="space-y-2 mb-4">
                                                 <div className="flex items-center gap-2 text-xs text-black">
+                                                    <span>📞</span> {app.candidate.phone}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-black">
                                                     <span>📍</span> {app.candidate.city}, {app.candidate.state}
                                                 </div>
-                                                {app.salaryExpectation && (
-                                                    <div className="flex items-center gap-2 text-xs text-black">
-                                                        <span>💰</span> R$ {app.salaryExpectation}
-                                                    </div>
-                                                )}
                                             </div>
 
                                             <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
@@ -992,9 +1159,9 @@ export default function AdminPanel() {
                                                         className="opacity-0 group-hover:opacity-100 transition-opacity bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold"
                                                         title="Editar candidato"
                                                     >
-                                                        ✏️ Editar
+                                                        ✏️ Vaga
                                                     </button>
-                                                    <div className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px]">⭐</div>
+                                                    <span className="text-[10px] font-bold text-blue-600 group-hover:underline">Ver mais →</span>
                                                 </div>
                                             </div>
                                         </div>

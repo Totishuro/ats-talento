@@ -42,7 +42,7 @@ export async function POST(request: Request) {
                 workMode: data.workMode || 'PRESENCIAL',
                 salaryRange: data.salaryRange || null,
                 salaryBudget: data.salaryBudget || null, // CONFIDENCIAL
-                status: data.status || 'DRAFT',
+                status: data.status || 'RASCUNHO',
             },
         });
 

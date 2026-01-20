@@ -40,7 +40,7 @@ export default function JobsManagement() {
         workMode: 'PRESENCIAL',
         salaryRange: '',
         salaryBudget: '',
-        status: 'DRAFT',
+        status: 'RASCUNHO',
     });
 
     // Auto-suggestion states for Job Form
@@ -121,9 +121,24 @@ export default function JobsManagement() {
     }, []);
 
     const fetchJobs = async () => {
-        const response = await fetch('/api/jobs');
-        const data = await response.json();
-        setJobs(data);
+        try {
+            const response = await fetch('/api/jobs');
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    setJobs(data);
+                } else {
+                    console.error('API retornou formato inválido:', data);
+                    setJobs([]);
+                }
+            } else {
+                console.error('Erro ao buscar vagas:', response.status);
+                setJobs([]);
+            }
+        } catch (error) {
+            console.error('Erro na requisição das vagas:', error);
+            setJobs([]);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -155,7 +170,7 @@ export default function JobsManagement() {
                 workMode: 'PRESENCIAL',
                 salaryRange: '',
                 salaryBudget: '',
-                status: 'DRAFT',
+                status: 'RASCUNHO',
             });
         }
     };
@@ -193,14 +208,24 @@ export default function JobsManagement() {
 
     const getStatusBadge = (status: string) => {
         const colors: Record<string, string> = {
+            RASCUNHO: 'bg-gray-100 text-gray-800',
+            EM_ANDAMENTO: 'bg-green-100 text-green-800',
+            FECHADA: 'bg-red-100 text-red-800',
+            PAUSADA: 'bg-yellow-100 text-yellow-800',
+            // Legacy/Fallback
             DRAFT: 'bg-gray-100 text-gray-800',
             OPEN: 'bg-green-100 text-green-800',
             CLOSED: 'bg-red-100 text-red-800',
         };
         const labels: Record<string, string> = {
-            DRAFT: 'Rascunho',
-            OPEN: 'Aberta',
-            CLOSED: 'Fechada',
+            RASCUNHO: 'Rascunho',
+            EM_ANDAMENTO: 'Aberta',
+            FECHADA: 'Fechada',
+            PAUSADA: 'Pausada',
+            // Legacy/Fallback
+            DRAFT: 'Rascunho (Legacy)',
+            OPEN: 'Aberta (Legacy)',
+            CLOSED: 'Fechada (Legacy)',
         };
         return (
             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[status]}`}>
@@ -210,26 +235,15 @@ export default function JobsManagement() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-transparent">
             {/* Header */}
-            <div className="bg-[#0b1b2f] text-white p-6 shadow-lg">
+            <div className="bg-transparent text-[#0F172A] p-6">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">Gerenciamento de Vagas</h1>
-                        <p className="text-white">Crie e gerencie as oportunidades</p>
+                        <h1 className="text-3xl font-bold mb-2 text-[#0F172A]">Gerenciamento de Vagas</h1>
+                        <p className="text-slate-600">Crie e gerencie as oportunidades</p>
                     </div>
-                    <button
-                        onClick={() => router.push('/admin')}
-                        className="px-4 py-2 bg-[#1e3a5f] hover:bg-[#b8c5d6] hover:text-[#0b1b2f] rounded-lg transition-colors"
-                    >
-                        ← Voltar ao Painel
-                    </button>
-                </div>
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 py-8">
-                {/* Action Button */}
-                <div className="mb-6">
+                    {/* Action Button moved to header for consistency */}
                     <button
                         onClick={() => {
                             setShowForm(!showForm);
@@ -246,14 +260,17 @@ export default function JobsManagement() {
                                 workMode: 'PRESENCIAL',
                                 salaryRange: '',
                                 salaryBudget: '',
-                                status: 'DRAFT',
+                                status: 'RASCUNHO',
                             });
                         }}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                        className="px-6 py-3 bg-[#38BDF8] text-[#0F172A] rounded-lg hover:brightness-110 font-bold shadow-md transition-all"
                     >
                         {showForm ? '✕ Cancelar' : '+ Nova Vaga'}
                     </button>
                 </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 py-8">
 
                 {/* Form */}
                 {showForm && (
@@ -427,9 +444,10 @@ export default function JobsManagement() {
                                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                     className="w-full px-4 py-2 border rounded-md text-black"
                                 >
-                                    <option value="DRAFT">Rascunho (não visível)</option>
-                                    <option value="OPEN">Aberta (publicada)</option>
-                                    <option value="CLOSED">Fechada</option>
+                                    <option value="RASCUNHO">Rascunho (não visível)</option>
+                                    <option value="EM_ANDAMENTO">Aberta (publicada)</option>
+                                    <option value="FECHADA">Fechada</option>
+                                    <option value="PAUSADA">Pausada</option>
                                 </select>
                             </div>
 
