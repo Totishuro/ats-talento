@@ -26,7 +26,7 @@ export async function POST(
         // 2. Perform Anti-Gafe Validations (Checklist)
         const validations = {
             candidateNameMatch: emailContent.includes(application.candidate.fullName.split(' ')[0]),
-            jobTitleMatch: emailContent.includes(application.job.title),
+            jobTitleMatch: emailContent.includes(application.job?.title || ''),
             emailActive: !!application.candidate.email,
         };
 
@@ -41,14 +41,14 @@ export async function POST(
         const updatedApp = await prisma.application.update({
             where: { id },
             data: {
-                currentStage: ApplicationStage.REJECTED,
+                currentStage: 'REPROVADO' as any,
                 previousStage: application.currentStage,
                 lastStageChange: new Date(),
                 rejectionReason,
                 stageHistory: {
                     create: {
                         fromStage: application.currentStage,
-                        toStage: ApplicationStage.REJECTED,
+                        toStage: 'REPROVADO' as any,
                         changedBy: 'recruiter', // Placeholder for actual auth user
                         notes: `Reprovado: ${rejectionReason}`
                     }
@@ -61,7 +61,7 @@ export async function POST(
             data: {
                 candidateId: application.candidateId,
                 applicationId: application.id,
-                content: `Candidato reprovado na vaga ${application.job.title}. Razão: ${rejectionReason}`,
+                content: `Candidato reprovado na vaga ${application.job?.title || 'N/A'}. Razão: ${rejectionReason}`,
                 createdBy: 'system'
             }
         });
@@ -101,7 +101,7 @@ export async function GET(
 
         // Generate dynamic template preview
         const firstName = application.candidate.fullName.split(' ')[0];
-        const jobTitle = application.job.title;
+        const jobTitle = application.job?.title || 'Vaga';
 
         const preview = `Olá, ${firstName}!
 

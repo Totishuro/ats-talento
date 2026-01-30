@@ -66,7 +66,7 @@ export default function AdminPanel() {
 
     // Calculate KPIs
     const activeApplications = applications.filter(app =>
-        app.currentStage !== 'REJECTED' && app.currentStage !== 'HIRED'
+        app.currentStage !== 'REPROVADO' && app.currentStage !== 'ADMISSAO'
     );
 
     const avgHiringTime = applications.length > 0
@@ -81,7 +81,7 @@ export default function AdminPanel() {
         : 0;
 
     const conversionRate = applications.length > 0
-        ? Math.round((applications.filter(app => app.currentStage === 'HIRED').length / applications.length) * 100)
+        ? Math.round((applications.filter(app => app.currentStage === 'ADMISSAO').length / applications.length) * 100)
         : 0;
 
     // Rejection Modal State
@@ -178,7 +178,7 @@ export default function AdminPanel() {
     const handleDrop = async (stageId: ApplicationStage) => {
         if (!draggedItem) return;
 
-        if (stageId === 'REJECTED') {
+        if (stageId === 'REPROVADO') {
             await openRejectionModal(draggedItem);
             setDraggedItem(null);
             return;
@@ -942,7 +942,7 @@ export default function AdminPanel() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                             <span className="text-slate-500 font-medium">
-                                {applications.filter(a => a.currentStage === 'HIRED').length} contratações realizadas
+                                {applications.filter(a => a.currentStage === 'ADMISSAO').length} contratações realizadas
                             </span>
                         </div>
                     </div>

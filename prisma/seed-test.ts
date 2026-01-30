@@ -24,7 +24,7 @@ async function main() {
                 workMode: 'HIBRIDO',
                 salaryRange: 'R$ 12.000 - R$ 18.000',
                 salaryBudget: 'R$ 20.000 (máximo)',
-                status: 'OPEN',
+                status: 'OPEN' as any,
             },
         }),
         prisma.job.create({
@@ -39,7 +39,7 @@ async function main() {
                 workMode: 'REMOTO',
                 salaryRange: 'R$ 7.000 - R$ 10.000',
                 salaryBudget: 'R$ 11.000',
-                status: 'OPEN',
+                status: 'OPEN' as any,
             },
         }),
         prisma.job.create({
@@ -54,7 +54,7 @@ async function main() {
                 workMode: 'PRESENCIAL',
                 salaryRange: 'R$ 6.000 - R$ 9.000',
                 salaryBudget: 'R$ 10.000',
-                status: 'OPEN',
+                status: 'OPEN' as any,
             },
         }),
         prisma.job.create({
@@ -69,7 +69,7 @@ async function main() {
                 workMode: 'HIBRIDO',
                 salaryRange: 'R$ 15.000 - R$ 22.000',
                 salaryBudget: 'R$ 25.000',
-                status: 'OPEN',
+                status: 'OPEN' as any,
             },
         }),
         prisma.job.create({
@@ -84,7 +84,7 @@ async function main() {
                 workMode: 'REMOTO',
                 salaryRange: 'R$ 8.000 - R$ 12.000',
                 salaryBudget: 'R$ 13.500',
-                status: 'OPEN',
+                status: 'OPEN' as any,
             },
         }),
     ])
@@ -164,7 +164,7 @@ async function main() {
             data: {
                 candidateId: candidates[0].id,
                 jobId: jobs[0].id,
-                currentStage: 'SCREENING',
+                currentStage: 'TRIAGEM' as any,
             },
         }),
         // João se candidatou para Designer UX/UI (stage: Entrevista RH)
@@ -172,7 +172,7 @@ async function main() {
             data: {
                 candidateId: candidates[1].id,
                 jobId: jobs[1].id,
-                currentStage: 'HR_INTERVIEW',
+                currentStage: 'ENTREVISTA_RH',
             },
         }),
         // Ana se candidatou para Analista de Dados (stage: Aplicado)
@@ -180,7 +180,7 @@ async function main() {
             data: {
                 candidateId: candidates[2].id,
                 jobId: jobs[2].id,
-                currentStage: 'APPLIED',
+                currentStage: 'TRIAGEM' as any,
             },
         }),
         // Carlos se candidatou para Mobile (stage: Entrevista Técnica)
@@ -188,7 +188,7 @@ async function main() {
             data: {
                 candidateId: candidates[3].id,
                 jobId: jobs[4].id,
-                currentStage: 'TECHNICAL_INTERVIEW',
+                currentStage: 'ENTREVISTA_LIDERANCA' as any,
             },
         }),
         // Juliana se candidatou para Designer (stage: Proposta Enviada)
@@ -196,7 +196,7 @@ async function main() {
             data: {
                 candidateId: candidates[4].id,
                 jobId: jobs[1].id,
-                currentStage: 'PROPOSAL_SENT',
+                currentStage: 'PROPOSTA' as any,
             },
         }),
         // Maria também se candidatou para Mobile (Aplicado)
@@ -204,7 +204,7 @@ async function main() {
             data: {
                 candidateId: candidates[0].id,
                 jobId: jobs[4].id,
-                currentStage: 'APPLIED',
+                currentStage: 'TRIAGEM' as any,
             },
         }),
         // Carlos se candidatou para Full Stack (Triagem)
@@ -212,7 +212,7 @@ async function main() {
             data: {
                 candidateId: candidates[3].id,
                 jobId: jobs[0].id,
-                currentStage: 'SCREENING',
+                currentStage: 'TRIAGEM' as any,
             },
         }),
     ])

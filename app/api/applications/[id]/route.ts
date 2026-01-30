@@ -4,12 +4,13 @@ import { ApplicationStage } from '@prisma/client';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const body = await request.json();
         const { jobId, currentStage, recruiterNotes } = body;
-        const applicationId = params.id;
+        const applicationId = id;
 
         // Get current application to store previous stage if moving
         const currentApp = await prisma.application.findUnique({

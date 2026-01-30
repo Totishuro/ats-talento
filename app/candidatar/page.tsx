@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Helper for CPF validation
@@ -52,9 +52,25 @@ const TECHNICAL_SKILLS_OPTIONS = ['Excel', 'Inglês', 'Espanhol', 'Power BI', 'P
 const DRIVER_LICENSE_OPTIONS = ['A', 'B', 'AB', 'C', 'D', 'E'];
 
 export default function CandidateForm() {
+    return (
+        <Suspense fallback={<SearchParamsLoader />}>
+            <CandidateFormContent />
+        </Suspense>
+    );
+}
+
+function SearchParamsLoader() {
+    return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+    );
+}
+
+function CandidateFormContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const jobId = searchParams.get('jobId');
+    const jobIdParam = searchParams.get('jobId');
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -256,7 +272,7 @@ export default function CandidateForm() {
                 }
             });
 
-            if (jobId) submitData.append('jobId', jobId);
+            if (jobIdParam) submitData.append('jobId', jobIdParam);
             if (forceUpdate) submitData.append('forceUpdate', 'true');
 
             const response = await fetch('/api/candidates', {
